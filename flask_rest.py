@@ -1,28 +1,70 @@
-from flask import Flask,jsonify
-
+from flask import Flask,jsonify,request
+from flask_restful import Api,Resource
 app = Flask(__name__)
+api=Api(app)
 
+def checkPostedData(postedData,functionName):
+    if(functionName=="add" or "sub"):
+        if "x" not in postedData or "y" not in postedData:
+            return 301
+        else:
+            return 200
+class Add(Resource):
+    def post(self):
+    #get posted data:
+        postedData=request.get_json()
+        status_code=checkPostedData(postedData,"add")
+        if(status_code!=200):
+            retJson={
+                  'message':"error message",
+            'status code':status_code
+            }
+            return jsonify(retJson)
+        x=postedData["x"]
+        y=postedData["y"]
+        x=int(x)
+        y=int(y)
+    #Add the posted Data       
+        ret=x+y
+        retMap={
+            'message':ret,
+            'status code':200 
+        }
+        return jsonify(retMap)
+class Sub(Resource):
+       def post(self):
+    #get posted data:
+        postedData=request.get_json()
+        status_code=checkPostedData(postedData,"sub")
+        if(status_code!=200):
+            retJson={
+                  'message':"error message",
+            'status code':status_code
+            }
+            return jsonify(retJson)
+        x=postedData["x"]
+        y=postedData["y"]
+        x=int(x)
+        y=int(y)
+    #Add the posted Data       
+        ret=x-y
+        retMap={
+            'message':ret,
+            'status code':200 
+        }
+        return jsonify(retMap)
+class Mul(Resource):
+    pass
+class Div(Resource):
+    pass
 
-@app.route('/user')    
+#add api resources for created classes
+api.add_resource(Add,"/add")
+api.add_resource(Sub,"/sub")
+
+@app.route('/')    
 def test():
-    retJson={
-         'json1':'abcd',
-         'field2':"djsvkj",
-          "data":[{"stuff":[
-    {"onetype":[
-        {"id":1,"name":"John Doe"},
-        {"id":2,"name":"Don Joeh"}
-    ]},
-    {"othertype":[
-        {"id":2,"company":"ACME"}
-    ]}]
-},{"otherstuff":[
-    {"thing":
-        [[1,42],[2,2]]
-    }]
-}]
-    }
-    return jsonify(retJson)
+    return'test'
 
 if __name__=="__main__":
     app.run(debug=True)
