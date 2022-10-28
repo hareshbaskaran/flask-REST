@@ -1,3 +1,4 @@
+from tkinter.tix import INTEGER
 from flask import Flask,jsonify,request
 from flask_restful import Api,Resource
 app = Flask(__name__)
@@ -6,11 +7,15 @@ def checkPostedData(postedData,functionName):
     if(functionName=="add" or "sub" or "mul"):
         if "x" not in postedData or "y" not in postedData:
             return 301
+        if int(postedData['x'])!=int:
+            return 303  
         else:
-            return 200
+            return 200     
     if(functionName=="div"):
-        if "y"==0:
+        if int(postedData["y"])==0:
             return 302
+        if int(postedData['x'])!=int:
+            return 303      
         else:
             return 200         
 class Add(Resource):
@@ -84,18 +89,18 @@ class Div(Resource):
     #get posted data:
         postedData=request.get_json()
         status_code=checkPostedData(postedData,"div")
-        if(status_code!=200):
+        if(status_code==301):
             retJson={
                   'message':"error message",
             'status code':status_code
             }    
             return jsonify(retJson)
         if(status_code==302):
-            retJson={
+            retJsondiv={
                   'message':"Invalid Divisor",
             'status code':status_code
             }    
-            return jsonify(retJson)    
+            return jsonify(retJsondiv)    
         x=postedData["x"]
         y=postedData["y"]
         x=int(x)
